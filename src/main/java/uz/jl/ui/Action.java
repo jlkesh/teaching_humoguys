@@ -1,8 +1,13 @@
 package uz.jl.ui;
 
+import jdk.jshell.execution.Util;
+import uz.jl.dto.todo.TodoCreateDTO;
+import uz.jl.dto.todo.TodoDTO;
+import uz.jl.dto.todo.TodoUpdateDTO;
 import uz.jl.dto.user.UserCreateDTO;
 import uz.jl.dto.user.UserDTO;
 import uz.jl.dto.user.UserLoginDTO;
+import uz.jl.services.TodoService;
 import uz.jl.services.UserService;
 import uz.jl.test.AppResponse;
 
@@ -10,7 +15,9 @@ import java.util.Scanner;
 
 public class Action {
     public static final Scanner SCANNER = new Scanner(System.in);
+    public static final Scanner SCANNER_STR = new Scanner(System.in);
     public static final UserService USER_SERVICE = new UserService();
+    public static final TodoService TODO_SERVICE = new TodoService();
 
     public static void registerAction() {
         if (!SessionUser.isLoggedIn()) {
@@ -42,19 +49,37 @@ public class Action {
 
     public static void deleteAction() {
         if (SessionUser.isLoggedIn()) {
-            System.out.println("delete todo");
+            System.out.print("Please enter todo id : ");
+            long todoId = SCANNER.nextLong();
+            Utils.showResponse(TODO_SERVICE.delete(todoId));
         } else System.out.println("Sign in please");
     }
 
     public static void updateAction() {
         if (SessionUser.isLoggedIn()) {
-            System.out.println("Update todo");
+            System.out.print("Enter todo id : ");
+            Long todoId = SCANNER.nextLong();
+            System.out.print("Enter todo title : ");
+            String title = SCANNER_STR.nextLine();
+            System.out.print("Enter todo done(true/false) : ");
+            String done = SCANNER_STR.nextLine();
+            TodoUpdateDTO dto = TodoUpdateDTO.builder()
+                    .todoId(todoId)
+                    .title(title.length() == 0 ? null : title)
+                    .done(done.length() == 0 ? null : Boolean.valueOf(done))
+                    .build();
+            Utils.showResponse(TODO_SERVICE.update(dto));
         } else System.out.println("Sign in please");
     }
 
     public static void createTodoAction() {
         if (SessionUser.isLoggedIn()) {
-            System.out.println("Create Todo");
+            System.out.print("Enter todo title : ");
+            String title = SCANNER_STR.nextLine();
+            TodoCreateDTO todoCreateDTO = TodoCreateDTO.builder()
+                    .title(title)
+                    .build();
+            Utils.showResponse(TODO_SERVICE.create(todoCreateDTO));
         } else System.out.println("Sign in please");
     }
 

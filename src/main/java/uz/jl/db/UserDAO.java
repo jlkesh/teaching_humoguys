@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class UserDAO extends BaseDAO {
 
@@ -51,7 +52,8 @@ public class UserDAO extends BaseDAO {
             String jsonDATA = resultSet.getString(1);
             Type type = new TypeToken<List<TodoDTO>>() {
             }.getType();
-            return gson.fromJson(jsonDATA, type);
+            return Objects.requireNonNullElse(gson.fromJson(jsonDATA, type), new ArrayList<>());
+
         }
         throw new SQLException("QUERY did not return todo list");
     }
