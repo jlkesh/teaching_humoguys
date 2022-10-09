@@ -2,6 +2,7 @@ package uz.jl.ui;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import uz.jl.dto.user.UserDTO;
 import uz.jl.test.AppResponse;
 
 import java.util.Scanner;
@@ -44,7 +45,7 @@ public class Utils {
         String responseJSON = GSON.toJson(response);
         if (response.isOk()) {
             System.out.println(ANSI_GREEN + responseJSON + ANSI_RESET);
-        } else System.out.println( ANSI_RED +responseJSON + ANSI_RESET);
+        } else System.out.println(ANSI_RED + responseJSON + ANSI_RESET);
 
     }
 }

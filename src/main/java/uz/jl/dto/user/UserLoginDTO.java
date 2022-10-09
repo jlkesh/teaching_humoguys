@@ -1,4 +1,4 @@
-package uz.jl.dto;
+package uz.jl.dto.user;
 
 
 import lombok.*;
