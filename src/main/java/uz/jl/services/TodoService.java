@@ -18,7 +18,7 @@ public class TodoService {
     public AppResponse<TodoDTO> create(@NonNull TodoCreateDTO todoCreateDTO) {
         todoCreateDTO.setUserId(SessionUser.getUserId());
         try {
-            TodoDTO todoDTO = todoDAO.create(todoCreateDTO);
+            TodoDTO todoDTO = todoDAO.save(todoCreateDTO);
             return new AppResponse<>(todoDTO);
         } catch (SQLException e) {
             return new AppResponse<>(AppErrorDTO.builder()
