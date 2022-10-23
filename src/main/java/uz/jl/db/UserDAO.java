@@ -19,20 +19,17 @@ public class UserDAO extends BaseDAO {
 
 
     public static final String SELECT_USER_BY_USERNAME_QUERY = """
-            select * from todo.users t where t.username =  ? ;""";
+            select * from humoguystodo.todo.users t where t.username =  ? ;""";
     public static final String INSERT_USER_QUERY = """
-            insert into todo.users (username, password, uuid, "role") values (?,?,?,?) returning id;""";
+            insert into humoguystodo.todo.users (username, password, uuid, "role") values (?,?,?,?) returning id;""";
 
 
     public Optional<UserDomain> findUserByUsername(@NonNull String username) throws SQLException {
         Connection postgresConnection = getPostgresConnection();
-        //Statement statement = postgresConnection.createStatement();
         PreparedStatement prst = postgresConnection.prepareStatement(SELECT_USER_BY_USERNAME_QUERY);
         prst.setString(1, username);
         ResultSet resultSet = prst.executeQuery();
-        if (resultSet.next())
-            return Optional.of(new UserRowMapper().map(resultSet));
-        return Optional.empty();
+        return Optional.of(mapTo(resultSet, UserRowMapper.class));
     }
 
     public List<TodoDTO> getAllTodoByUserId(Long userId) throws SQLException {

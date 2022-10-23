@@ -12,6 +12,12 @@ import java.sql.*;
 public class TodoDAO extends BaseDAO {
 
     public static final String INSERT_TODO_QUERY = "insert into humoguystodo.todo.todos (title, user_id) values (?,?) returning *;";
+    public static final String DELETE_TODO = "delete from humoguystodo.todo.todos where id = ? and user_id = ?;";
+    public static final String UPDATE_TODO = "update humoguystodo.todo.todos t " +
+            "set title = ?, " +
+            "done = ? " +
+            "where t.id = ? and " +
+            "t.user_id = ?";
 
     public TodoDomain create(TodoCreateDTO todoCreateDTO) throws SQLException {
         Connection connection = getPostgresConnection();
@@ -21,37 +27,26 @@ public class TodoDAO extends BaseDAO {
         pstm.setLong(2, todoCreateDTO.getUserId());
 
         ResultSet resultSet = pstm.executeQuery();
-        if (resultSet.next()) {
-            return map(resultSet, TodoRowMapper.class);
-        }
-        throw new SQLException("QUERY did not return id");
+        return mapTo(resultSet, TodoRowMapper.class);
     }
 
-    public String delete(long todoId, Long userId) throws SQLException {
+    public boolean delete(long todoId, Long userId) throws SQLException {
         var connection = getPostgresConnection();
-        var callableStatement = connection.prepareCall("select todo_delete(?,?)");
-
-        callableStatement.setLong(1, todoId);
-        callableStatement.setLong(2, userId);
-        ResultSet resultSet = callableStatement.executeQuery();
-        if (resultSet.next()) {
-            return resultSet.getString(1);
-        }
-        throw new SQLException("QUERY did not work");
+        var prsm = connection.prepareCall(DELETE_TODO);
+        prsm.setLong(1, todoId);
+        prsm.setLong(2, userId);
+        prsm.execute();
+        return true;
     }
 
     public Long update(TodoUpdateDTO dto, Long userId) throws SQLException {
         var connection = getPostgresConnection();
-        var callableStatement = connection.prepareCall("select todo_update(?,?)");
-
-        String toJson = gson.toJson(dto);
-        System.out.println(toJson);
-        callableStatement.setString(1, toJson);
-        callableStatement.setLong(2, userId);
-        ResultSet resultSet = callableStatement.executeQuery();
-        if (resultSet.next()) {
-            return resultSet.getLong(1);
-        }
-        throw new SQLException("QUERY did not work");
+        var prsm = connection.prepareStatement(UPDATE_TODO);
+        prsm.setString(1, dto.getTitle());
+        prsm.setBoolean(2, dto.getDone());
+        prsm.setLong(3, dto.getTodoId());
+        prsm.setLong(4, userId);
+        prsm.execute();
+        return dto.getTodoId();
     }
 }
