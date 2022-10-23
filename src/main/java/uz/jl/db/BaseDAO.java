@@ -1,12 +1,18 @@
 package uz.jl.db;
 
 import com.google.gson.Gson;
+import uz.jl.db.mapper.RowMapper;
+import uz.jl.db.mapper.RowMapperMarker;
+import uz.jl.domains.Domain;
 import uz.jl.properties.DatabaseProperties;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class BaseDAO {
     private static Connection connection;
@@ -31,4 +37,7 @@ public class BaseDAO {
             e.printStackTrace();
         }
     }
+
+
+
 }

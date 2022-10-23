@@ -1,25 +1,28 @@
 package uz.jl.db;
 
+import uz.jl.db.mapper.RowMapper;
+import uz.jl.db.mapper.TodoRowMapper;
+import uz.jl.domains.TodoDomain;
 import uz.jl.dto.todo.TodoCreateDTO;
 import uz.jl.dto.todo.TodoDTO;
 import uz.jl.dto.todo.TodoUpdateDTO;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class TodoDAO extends BaseDAO {
-    public TodoDTO create(TodoCreateDTO todoCreateDTO) throws SQLException {
-        Connection connection = getPostgresConnection();
-        CallableStatement callableStatement = connection.prepareCall("select todo_create(?,?)");
 
-        callableStatement.setString(1, todoCreateDTO.getTitle());
-        callableStatement.setLong(2, todoCreateDTO.getUserId());
-        ResultSet resultSet = callableStatement.executeQuery();
+    public static final String INSERT_TODO_QUERY = "insert into humoguystodo.todo.todos (title, user_id) values (?,?) returning *;";
+
+    public TodoDomain create(TodoCreateDTO todoCreateDTO) throws SQLException {
+        Connection connection = getPostgresConnection();
+
+        PreparedStatement pstm = connection.prepareStatement(INSERT_TODO_QUERY);
+        pstm.setString(1, todoCreateDTO.getTitle());
+        pstm.setLong(2, todoCreateDTO.getUserId());
+
+        ResultSet resultSet = pstm.executeQuery();
         if (resultSet.next()) {
-            String jsonDATA = resultSet.getString(1);
-            return gson.fromJson(jsonDATA, TodoDTO.class);
+            return map(resultSet, TodoRowMapper.class);
         }
         throw new SQLException("QUERY did not return id");
     }

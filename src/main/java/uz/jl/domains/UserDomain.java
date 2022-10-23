@@ -11,7 +11,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @Builder
-public class UserDomain {
+public class UserDomain implements Domain {
     private Long id;
     @Builder.Default
     private String uuid = UUID.randomUUID().toString();

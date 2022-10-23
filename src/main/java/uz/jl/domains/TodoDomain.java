@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @Builder
-public class TodoDomain {
+public class TodoDomain implements Domain {
     private Long id;
     private String title;
     private String uuid;
